@@ -252,13 +252,17 @@ export class Recorder {
 
     static
     forceDownload(blob, filename) {
-        let url = (window.URL || window.webkitURL).createObjectURL(blob);
-        let link = window.document.createElement('a');
-        link.href = url;
-        link.download = filename || 'output.wav';
-        let click = document.createEvent("Event");
-        click.initEvent("click", true, true);
-        link.dispatchEvent(click);
+        if(window.navigator && window.navigator.msSaveOrOpenBlob) {
+            window.navigator.msSaveOrOpenBlob(e, filename);
+        } else {
+            let link = window.document.createElement("a");
+            let url = (window.URL || window.webkitURL).createObjectURL(blob);
+            window.document.body.appendChild(link);
+            link.href = url;
+            link.download = filename || "output.wav";
+            link.click();
+            window.URL.revokeObjectURL(url);
+        }
     }
 }
 
