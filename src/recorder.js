@@ -191,26 +191,28 @@ export class Recorder {
             this.node.disconnect();
         }
 
-        this.context = source.context;
-        this.node = (this.context.createScriptProcessor ||
-        this.context.createJavaScriptNode).call(this.context,
-            this.config.bufferLen, this.config.numChannels, this.config.numChannels);
-
-        this.node.onaudioprocess = (e) => {
-            if (!this.recording) return;
-
-            var buffer = [];
-            for (var channel = 0; channel < this.config.numChannels; channel++) {
-                buffer.push(e.inputBuffer.getChannelData(channel));
-            }
-            this.worker.postMessage({
-                command: 'record',
-                buffer: buffer
-            });
-        };
-
-        source.connect(this.node);
-        this.node.connect(this.context.destination);    //this should not be necessary
+        if(source) {
+            this.context = source.context;
+            this.node = (this.context.createScriptProcessor ||
+            this.context.createJavaScriptNode).call(this.context,
+                this.config.bufferLen, this.config.numChannels, this.config.numChannels);
+    
+            this.node.onaudioprocess = (e) => {
+                if (!this.recording) return;
+    
+                var buffer = [];
+                for (var channel = 0; channel < this.config.numChannels; channel++) {
+                    buffer.push(e.inputBuffer.getChannelData(channel));
+                }
+                this.worker.postMessage({
+                    command: 'record',
+                    buffer: buffer
+                });
+            };
+    
+            source.connect(this.node);
+            this.node.connect(this.context.destination);    //this should not be necessary
+        }
     }
 
 
