@@ -1,1 +1,4 @@
-module.exports = require("./recorder").Recorder;
+module.exports = {
+    Recorder: require("./recorder").Recorder,
+    getRecorderWorker: require("./worker")
+};
